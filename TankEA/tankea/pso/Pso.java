@@ -8,6 +8,12 @@ public class Pso {
 		int pso = ((personalBest - currentNo) + (localBest - currentNo) + (globalBest - currentNo));
 		no += pso;
 	}
+	
+	public void input(int personalBest,int globalBest, int currentNo) {
+		no = currentNo;
+		int pso = ((personalBest - currentNo) + (globalBest - currentNo));
+		no += pso;
+	}
 
 	public int output() {
 		return no;

@@ -105,7 +105,7 @@ public class WorldEngine implements Runnable{
 	}
 	
 	private int tankNavigation(int dC,int cC){
-		return (dC<cC)?-1:(dC>cC)?+1:0;
+		return (dC<cC)?-1:(dC>cC)?1:0;
 	}
 	
 	/**this method will move the tanks using a Particle Swarm Optimisation or randomly generated position*/
@@ -154,6 +154,7 @@ public class WorldEngine implements Runnable{
 	 * @param currentRound passed through to add to a tank object if it dies*/
 	private void tankSensorAction(int currentRound) {
 		for (Tank t : tankList) {
+			LinkedList<Tank> localTanks=new LinkedList<Tank>();
 			if (t.isDead() == false) {
 				Coordinates tempPosition = t.getCoord();
 				for (int x = 0; x < t.getSensorRange(); x++) {
@@ -165,13 +166,20 @@ public class WorldEngine implements Runnable{
 									.getTank();
 							if ((positionCheck == true) && (positionGetTank.isDead() == false)
 									&& (positionGetTank.getTeam() != t.getTeam())) {
-								this.attackTankAction(t, positionGetTank, currentRound);
+								
+								localTanks.add(positionGetTank);
+								//tankActions.attackTankAction(t, positionGetTank, currentRound,world[x][y]);
 							}
 						} catch (ArrayIndexOutOfBoundsException e) {
 							// position does not exist
 						}
 					}
 				}
+			}
+			if(localTanks.size()>=1){
+				EntityActions tankActions = new EntityActions();// the below three lines are to allow the tank to attack the weakest local tank
+				Coordinates defendingTankCoordinates = tankActions.attackWeakestTankAction(t, currentRound, localTanks);
+				this.getPos(defendingTankCoordinates.getX(), defendingTankCoordinates.getY()).setTankDiedAtPosition();
 			}
 		}
 	}
@@ -186,23 +194,6 @@ public class WorldEngine implements Runnable{
 				+ ":" + originalTankArmour);
 	}
 
-	/**this method will perform an attack action between an attacking and defending tank
-	 * @param at this is the attacking tank
-	 * @param dt this is the defending tank
-	 * @param currentRound the round the attack is happening in*/
-	private void attackTankAction(Tank at, Tank dt, int currentRound) {
-		if (at.getAmmoSupply() >= 1) {
-			int tempArmour = dt.getArmour();
-			dt.decreaseArmour(at.getAttackPower());
-			if (dt.getArmour() < 1) {
-				dt.setDead(true);
-				dt.setRoundTankDiedIn(currentRound);
-				world[dt.getCoord().getX()][dt.getCoord().getY()].setTankDiedAtPosition();
-			}
-			at.decreaseAmmoSupply(1);
-			//this.printBattleResult(at, dt, tempArmour);
-		}
-	}
 
 	/**this method will return all the tanks from the specified team
 	 * @param c the team to be returned

@@ -194,4 +194,8 @@ public class Tank extends Observable{
 	public Coordinates getDestination(){
 		return destination;
 	}
+	
+	public int getTankTotalPower(){
+		return attackPower+sensorRange+ammoSupply+currentArmour;
+	}
 }

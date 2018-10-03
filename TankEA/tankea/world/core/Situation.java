@@ -39,7 +39,10 @@ public class Situation {
 	public int getArmour() {
 		return armour;
 	}
-
+	
+	public int getTotalPower(){
+		return attackPower+sensorRange+ammoSupply+armour;
+	}
 	public Coordinates getSitCoordinates() {
 		return sitCoordinates;
 	}
